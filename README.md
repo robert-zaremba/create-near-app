@@ -15,17 +15,16 @@ Make sure you have a [current version of Node.js](https://nodejs.org/en/about/re
 Getting Started
 ===============
 
-You can configure two main aspects of your new NEAR project:
+To create a new NEAR project with default settings, run:
 
-* frontend: do you want a **vanilla JavaScript** stack or **React**?
-* backend: do you want your contracts to be written in **Rust** or **AssemblyScript** (a dialect of TypeScript)?
+    npx create-near-app new-awesome-project
 
-| command                                                | frontend   | backend        |
-| ------------------------------------------------------ | ---------- | -------------- |
-| `npx create-near-app new-awesome-app`                  | React      | AssemblyScript |
-| `npx create-near-app --vanilla new-awesome-app`        | vanilla JS | AssemblyScript |
-| `npx create-near-app --rust new-awesome-app`           | React      | Rust           |
-| `npx create-near-app --vanilla --rust new-awesome-app` | vanilla JS | Rust           |
+This will use [npx](https://blog.npmjs.org/post/162869356040/introducing-npx-an-npm-package-runner) to create a project with a **vanilla JavaScript** frontend and an [AssemblyScript](https://docs.near.org/docs/roles/developer/contracts/assemblyscript) smart contract.
+
+Other options:
+
+* `--frontend=react` – use [React](https://reactjs.org/) for your frontend template
+* `--contract=rust` – use [Rust](https://docs.near.org/docs/roles/developer/contracts/near-sdk-rs) for your smart contract
 
 
 Develop your own Dapp
