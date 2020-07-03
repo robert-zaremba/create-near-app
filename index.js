@@ -61,13 +61,11 @@ const doCreateProject = async function(options) {
     };
     await copyDirFn(sourceTemplateDir, projectDir);
 
-    // copy contract
-    const contractTargetDir = `${projectDir}/${options.rust? 'contract' : 'assembly'}`;
+    // copy common files
     const contractSourceDir = `${__dirname}/common/contracts/${contractLang}`;
-    console.log(`Copying contract files to new project directory (${contractTargetDir}) from source (${contractSourceDir}).`);
+    const contractTargetDir = `${projectDir}/${options.rust? 'contract' : 'assembly'}`;
     await copyDirFn(contractSourceDir, contractTargetDir);
-
-    // copy common frontend files
+    await copyDirFn(`${__dirname}/common/README.md`, `${projectDir}/README.md`);
     await copyDirFn(`${__dirname}/common/frontend`, `${projectDir}/src`);
 
     // use correct package.json; delete the other(s)
@@ -79,10 +77,11 @@ const doCreateProject = async function(options) {
     await replaceInFiles({
         files: [
             // NOTE: These can use globs if necessary later
+            `${projectDir}/README.md`,
             `${projectDir}/package.json`,
             `${projectDir}/src/config.js`,
         ],
-        from: 'near-blank-project',
+        from: /near-blank-project/g,
         to: projectName
     });
 
@@ -91,6 +90,9 @@ const doCreateProject = async function(options) {
         await replaceInFiles({ files: `${projectDir}/src/*`, from: /setGreeting/g, to: 'set_greeting' });
         await replaceInFiles({ files: `${projectDir}/src/*`, from: /assembly\/main.ts/, to: 'contract/src/lib.rs' });
         await replaceInFiles({ files: `${projectDir}/src/*`, from: /accountId:/g, to: 'account_id:' });
+        await replaceInFiles({ files: `${projectDir}/README.md`, from: /\bassembly\b/g, to: 'contract' });
+        await replaceInFiles({ files: `${projectDir}/README.md`, from: /\basp\b/g, to: 'cargo' });
+        await replaceInFiles({ files: `${projectDir}/README.md`, from: 'https://www.npmjs.com/package/@as-pect/cli', to: 'https://doc.rust-lang.org/cargo/index.html' });
     }
 
     await renameFile(`${projectDir}/near.gitignore`, `${projectDir}/.gitignore`);
@@ -98,6 +100,10 @@ const doCreateProject = async function(options) {
 
     const hasNpm = await which('npm', { nothrow: true });
     const hasYarn = await which('yarn', { nothrow: true });
+
+    if (hasYarn) {
+        await replaceInFiles({ files: `${projectDir}/README.md`, from: /npm\b( run)?/g, to: 'yarn' });
+    }
 
     if (hasNpm || hasYarn) {
         console.log('Installing project dependencies...');
